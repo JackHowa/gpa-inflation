@@ -55,7 +55,7 @@ var labels = {
 
 //in the future, change these labels for the 
 
-d3.tsv("js/data of gpa.tsv", function(error, data) {
+d3.tsv("js/data of gpa later.tsv", function(error, data) {
 
   if (error) throw error;
 
