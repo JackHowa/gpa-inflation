@@ -54,7 +54,7 @@ var svg = d3.select(".chart").append("svg")
 
 }
 
-d3.tsv("js/data of gpa later.tsv", function(error, data) {
+d3.tsv("js/data - fixed georgia, rounded 2.tsv", function(error, data) {
 
   if (error) throw error;
 
