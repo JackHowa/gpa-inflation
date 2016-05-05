@@ -22,7 +22,11 @@ var yAxis = d3.svg.axis()
 
 var line = d3.svg.line()
     .interpolate("basis")
-     .defined(function(d){return d.gpa != null && d.gpa != undefined && d.gpa !== 0})
+    .defined(function(d){
+      
+      if (d.gpa) { return d.gpa;}
+      //return d.gpa != null && d.gpa != undefined && d.gpa !== 0 && d.gpa
+    })
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.gpa); });
 
@@ -34,8 +38,8 @@ var svg = d3.select(".chart").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var labels = {
-  "Mizzou" : "MU",
+    var labels = {
+  "Mizzou" : "Mizzou",
   "Alabama" : "Alabma",
   "Auburn" : "Auburn",
   "Florida" : "Florida",
@@ -50,18 +54,16 @@ var labels = {
 
 }
 
-
-
-
-//in the future, change these labels for the 
-
 d3.tsv("js/data of gpa later.tsv", function(error, data) {
 
   if (error) throw error;
 
   color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
+  console.log(data);
+
   data.forEach(function(d) {
+    console.log(d);
     d.date = parseDate(d.date);
   });
 
@@ -70,17 +72,15 @@ d3.tsv("js/data of gpa later.tsv", function(error, data) {
       name: name,
       values: data.map(function(d) {
         return {date: d.date, 
-                gpa: +d[name],
-                name : labels[name]
-              };
+                gpa: +d[name], 
+                name: labels[name]};
       })
     };
   });
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
 
-  y.domain([
-    d3.min(schools, function(c) { return d3.min(c.values, function(v) { return v.gpa; }); }),
+  y.domain([2.4,
     d3.max(schools, function(c) { return d3.max(c.values, function(v) { return v.gpa; }); })
   ]);
 
@@ -92,12 +92,12 @@ d3.tsv("js/data of gpa later.tsv", function(error, data) {
   svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("GPA");
+    // .append("text")
+    //   .attr("transform", "rotate(-90)")
+    //   .attr("y", 6)
+    //   .attr("dy", ".71em")
+    //   .style("text-anchor", "end")
+    //   .text("gpa (ºF)");
 
   var school = svg.selectAll(".school")
       .data(schools)
@@ -106,17 +106,44 @@ d3.tsv("js/data of gpa later.tsv", function(error, data) {
 
   school.append("path")
       .attr("class", "line")
-      .attr("d", function(d) { return line(d.values); })
+      .attr("name", function(d) {
+        return d.name;
+      })
+      .attr("d", function(d) {return line(d.values); })
       .style("stroke", function(d) { return color(d.name); });
 
+
+
+
   school.append("text")
-      .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.gpa) + ")"; })
+      .datum(function(d) {
+
+        //This is a little tricky. The line label in the blocks example assumes
+        // the data is consistent, and that the last value of each array will be a number.
+        // The last value of the array determines our x/y coordinate (date and gpa).
+        // Our arrays are all the same length, but they don't all have a value for gpa.
+        // So, here's a trick. We'll iterate backwards through the array with a loop and stop
+        // when we encounter a value. i=28... i=27... i=26... etc.
+        // The test:
+        // `if (d.values[i].gpa)`  
+        // It may not look like a test, but it is.
+        // We're basically saying if d.values[i].gpa is a value, use it as our key. 
+        var key = d.values.length - 1;
+        for (i = key; i > 0; i--) {
+          if (d.values[i].gpa) {
+            key = i;
+            break;
+          }
+        }
+
+        return {name: d.name, value: d.values[key]};
+      })
+      .attr("transform", function(d) {
+        return "translate(" + x(d.value.date) + "," + y(d.value.gpa) + ")";
+      })
       .attr("x", 3)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
-
-
 
 
     /* --------------- */
