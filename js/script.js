@@ -221,4 +221,6 @@ d3.tsv("js/data - fixed georgia, rounded 2.tsv", function(error, data) {
             d3.select(this).style("opacity", 0);
             $(".tt").hide();
         })
+
+
 });
