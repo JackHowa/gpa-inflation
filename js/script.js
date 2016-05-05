@@ -39,13 +39,13 @@ var svg = d3.select(".chart").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var labels = {
-  "Mizzou" : "Mizzou",
+  "MU" : "Mizzou",
   "Alabama" : "Alabma",
   "Auburn" : "Auburn",
   "Florida" : "Florida",
   "Georgia" : "Georgia",
   "Kentucky" : "Kentucky",
-  "South Carolina" : "South Carolina",
+  "SC" : "South Carolina",
   "Vanderbilt" : "Vanderbilt",
   "LSU" : "LSU",
   "Texas A&M" : "Texas A&M",
